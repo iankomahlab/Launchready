@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaunchReady — Full Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --teal:#1D9E75; --teal-lt:#E1F5EE; --teal-dk:#085041; --teal-md:#5DCAA5;
+  --blue:#185FA5; --blue-lt:#E6F1FB; --blue-dk:#0C447C; --blue-md:#85B7EB;
+  --purple:#534AB7; --purple-lt:#EEEDFE; --purple-dk:#3C3489; --purple-md:#AFA9EC;
+  --amber:#EF9F27; --amber-lt:#FAEEDA; --amber-dk:#633806;
+  --green-lt:#EAF3DE; --green-dk:#27500A; --green:#3B6D11;
+  --gray-bg:#F7F6F2; --gray-border:#E2E0D8; --gray-mid:#888780; --gray-dark:#2C2C2A;
+  --surface:#FFFFFF; --page-bg:#F4F3EE;
+  --text:#1A1A18; --text-2:#5A5A56; --text-3:#9A9A94;
+  --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+  --r:10px; --r-lg:14px; --r-xl:20px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--page-bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--gray-dark);display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-logo .logo-mark{display:flex;align-items:center;gap:8px;}
+.sidebar-logo .logo-icon{width:30px;height:30px;border-radius:8px;background:var(--teal);display:flex;align-items:center;justify-content:center;}
+.sidebar-logo .logo-icon i{font-size:16px;color:#fff;}
+.sidebar-logo .logo-text{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.3px;}
+.sidebar-logo .logo-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;font-family:var(--mono);}
+.sidebar-section{padding:14px 12px 4px;}
+.sidebar-section-label{font-size:9px;color:rgba(255,255,255,.3);font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:0 6px;margin-bottom:4px;}
+.sidebar-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:2px;}
+.sidebar-item i{font-size:16px;color:rgba(255,255,255,.45);flex-shrink:0;}
+.sidebar-item .si-label{font-size:12px;color:rgba(255,255,255,.55);font-weight:400;}
+.sidebar-item .si-badge{margin-left:auto;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:500;}
+.sidebar-item:hover{background:rgba(255,255,255,.06);}
+.sidebar-item:hover i,.sidebar-item:hover .si-label{color:rgba(255,255,255,.85);}
+.sidebar-item.active{background:rgba(255,255,255,.1);}
+.sidebar-item.active i{color:#fff;}
+.sidebar-item.active .si-label{color:#fff;font-weight:500;}
+.sidebar-divider{height:1px;background:rgba(255,255,255,.07);margin:8px 12px;}
+.sidebar-portal-header{padding:10px 12px 2px;}
+.sidebar-portal-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;width:100%;text-align:left;background:transparent;}
+.sidebar-portal-btn .pb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sidebar-portal-btn .pb-name{font-size:12px;color:rgba(255,255,255,.55);}
+.sidebar-portal-btn:hover{background:rgba(255,255,255,.06);}
+.sidebar-portal-btn:hover .pb-name{color:rgba(255,255,255,.85);}
+.sidebar-portal-btn.active{background:rgba(255,255,255,.1);}
+.sidebar-portal-btn.active .pb-name{color:#fff;font-weight:500;}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:220px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--gray-border);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;}
+.topbar-portal-tag{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.topbar-breadcrumb{font-size:12px;color:var(--text-3);}
+.topbar-breadcrumb span{color:var(--text-2);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.topbar-notif{position:relative;width:32px;height:32px;border-radius:8px;background:var(--gray-bg);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--gray-border);}
+.topbar-notif i{font-size:16px;color:var(--text-2);}
+.notif-pip{position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--blue);border:1.5px solid var(--surface);}
+.topbar-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;}
+.content{padding:24px;flex:1;display:flex;flex-direction:column;gap:20px;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--gray-border);border-radius:var(--r-lg);padding:16px 18px;}
+.card-sm{background:var(--surface);border:1px solid var(--gray-border);border-radius:var(--r);padding:12px 14px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+.stat-card{background:var(--gray-bg);border-radius:var(--r);padding:12px 14px;}
+.stat-lbl{font-size:11px;color:var(--text-3);margin-bottom:3px;}
+.stat-val{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.5px;}
+.stat-sub{font-size:10px;color:var(--text-3);margin-top:2px;}
+
+/* ── SECTION HEADERS ── */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sec-title{font-size:13px;font-weight:500;color:var(--text);}
+.sec-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
+
+/* ── ROWS / LISTS ── */
+.list-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-border);}
+.list-row:last-child{border-bottom:none;}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
+.rname{font-size:13px;font-weight:500;color:var(--text);}
+.rsub{font-size:11px;color:var(--text-3);margin-top:1px;}
+.rprog-bar{height:5px;background:var(--gray-border);border-radius:3px;margin-top:5px;}
+.rprog-fill{height:5px;border-radius:3px;}
+
+/* ── BADGES ── */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;}
+.bdg-green{background:var(--green-lt);color:var(--green-dk);}
+.bdg-amber{background:var(--amber-lt);color:var(--amber-dk);}
+.bdg-blue{background:var(--blue-lt);color:var(--blue-dk);}
+.bdg-purple{background:var(--purple-lt);color:var(--purple-dk);}
+.bdg-teal{background:var(--teal-lt);color:var(--teal-dk);}
+.bdg-gray{background:var(--gray-bg);color:var(--gray-mid);}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid;transition:all .15s;font-family:var(--font);}
+.btn:hover{opacity:.85;}
+.btn-teal{background:var(--teal-lt);border-color:var(--teal-md);color:var(--teal-dk);}
+.btn-blue{background:var(--blue-lt);border-color:var(--blue-md);color:var(--blue-dk);}
+.btn-purple{background:var(--purple-lt);border-color:var(--purple-md);color:var(--purple-dk);}
+.btn-ghost{background:transparent;border-color:var(--gray-border);color:var(--text-2);}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.btn-danger{background:#FCEBEB;border-color:#F09595;color:#791F1F;}
+
+/* ── TOGGLE SWITCHES ── */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-border);}
+.tog-row:last-child{border-bottom:none;}
+.tog-lbl{font-size:13px;color:var(--text);}
+.tog-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
+.sw{width:38px;height:22px;border-radius:11px;cursor:pointer;display:flex;align-items:center;padding:2px;transition:background .2s;flex-shrink:0;}
+.sw.on{background:var(--teal);justify-content:flex-end;}
+.sw.off{background:var(--gray-border);justify-content:flex-start;}
+.sw-k{width:18px;height:18px;border-radius:50%;background:#fff;transition:all .2s;}
+
+/* ── PROGRESS BARS ── */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.prog-lbl{font-size:12px;color:var(--text-2);width:110px;flex-shrink:0;}
+.prog-track{flex:1;height:8px;background:var(--gray-border);border-radius:4px;overflow:hidden;}
+.prog-fill{height:8px;border-radius:4px;}
+.prog-pct{font-size:11px;color:var(--text-3);width:32px;text-align:right;}
+
+/* ── GOAL CARDS ── */
+.goal-card{background:var(--gray-bg);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1px solid transparent;}
+.goal-card:hover{border-color:var(--gray-border);background:var(--surface);}
+.goal-card.selected{border-color:var(--blue-md);background:var(--blue-lt);}
+.goal-text{font-size:12px;color:var(--text);line-height:1.5;}
+.goal-meta{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;align-items:center;}
+
+/* ── PHONE FRAME ── */
+.phone-outer{display:flex;justify-content:center;padding:16px;}
+.phone{width:240px;background:var(--surface);border-radius:30px;border:2px solid var(--gray-border);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.phone-status{height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;}
+.phone-status .ptime{font-size:11px;color:#fff;font-weight:600;}
+.phone-status .picons{display:flex;gap:3px;}
+.phone-status .picons i{font-size:11px;color:rgba(255,255,255,.85);}
+.phone-header{padding:12px 15px 14px;}
+.phone-header .ph-sml{font-size:10px;color:rgba(255,255,255,.8);}
+.phone-header .ph-big{font-size:16px;font-weight:600;color:#fff;margin-top:2px;}
+.phone-body{padding:13px;display:flex;flex-direction:column;gap:10px;}
+.phone-nav{display:flex;background:var(--surface);border-top:1px solid var(--gray-border);padding:8px 0 4px;}
+.pni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.pni i{font-size:18px;color:var(--text-3);}
+.pni span{font-size:9px;color:var(--text-3);}
+.pni.active i,.pni.active span{color:var(--teal);font-weight:500;}
+
+/* ── NOTIFICATION ITEMS ── */
+.notif-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-border);}
+.notif-item:last-child{border-bottom:none;}
+.ndot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.ntitle{font-size:13px;font-weight:500;color:var(--text);}
+.nbody{font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5;}
+.ntime{font-size:10px;color:var(--text-3);margin-top:3px;}
+
+/* ── SCENARIO CARDS ── */
+.scen-card{background:var(--gray-bg);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;border:1px solid transparent;transition:all .15s;}
+.scen-card:hover{background:var(--surface);border-color:var(--gray-border);}
+.scen-card.active{background:var(--purple-lt);border-color:var(--purple-md);}
+
+/* ── CHART BARS ── */
+.chart-bar-rows{display:flex;flex-direction:column;gap:8px;}
+
+/* ── TABS ── */
+.page-tabs{display:flex;gap:0;border-bottom:1px solid var(--gray-border);margin-bottom:16px;}
+.ptab{padding:8px 14px;font-size:12px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.ptab.active{font-weight:500;border-bottom-width:2px;}
+
+/* ── INLINE SELECT ── */
+select{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid var(--gray-border);background:var(--surface);color:var(--text);font-family:var(--font);cursor:pointer;}
+input[type=text]{font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid var(--gray-border);background:var(--surface);color:var(--text);font-family:var(--font);width:100%;}
+input[type=text]:focus{outline:none;border-color:var(--blue-md);}
+
+/* ── DETAIL PANEL (right drawer) ── */
+.detail-panel{background:var(--surface);border-left:1px solid var(--gray-border);width:320px;flex-shrink:0;padding:18px;display:flex;flex-direction:column;gap:14px;border-radius:0 var(--r-lg) var(--r-lg) 0;}
+.dp-close{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.dp-close .dp-title{font-size:14px;font-weight:600;color:var(--text);}
+.dp-close .dp-x{width:26px;height:26px;border-radius:6px;background:var(--gray-bg);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;}
+.dp-close .dp-x i{font-size:14px;color:var(--text-2);}
+.dp-section{font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.dp-field{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--gray-border);font-size:12px;}
+.dp-field:last-child{border-bottom:none;}
+.dp-field-lbl{color:var(--text-3);}
+.dp-field-val{color:var(--text);font-weight:500;}
+
+/* ── TWO-PANEL LAYOUT ── */
+.two-panel{display:flex;gap:0;background:var(--surface);border:1px solid var(--gray-border);border-radius:var(--r-lg);overflow:hidden;}
+.two-panel .left-pane{flex:1;min-width:0;padding:16px 18px;border-right:1px solid var(--gray-border);}
+.two-panel .right-pane{width:300px;flex-shrink:0;padding:16px 18px;}
+
+/* ── STEP WIZARD ── */
+.wizard-steps{display:flex;align-items:center;gap:0;margin-bottom:16px;}
+.wstep{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.wcircle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;border:2px solid;transition:all .2s;}
+.wcircle.done{background:var(--blue);border-color:var(--blue);color:#fff;}
+.wcircle.active{background:var(--blue-lt);border-color:var(--blue);color:var(--blue);}
+.wcircle.idle{background:var(--gray-bg);border-color:var(--gray-border);color:var(--text-3);}
+.wlabel{font-size:10px;color:var(--text-3);text-align:center;}
+.wlabel.active{color:var(--blue);font-weight:500;}
+.wline{flex:1;height:1.5px;background:var(--gray-border);margin-bottom:14px;max-width:40px;}
+.wline.done{background:var(--blue);}
+
+/* ── MISC ── */
+.upload-zone{border:2px dashed var(--gray-border);border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;transition:all .2s;}
+.upload-zone:hover{border-color:var(--blue-md);background:var(--blue-lt);}
+.info-box{border-radius:var(--r);padding:11px 13px;font-size:12px;display:flex;gap:8px;align-items:flex-start;}
+.info-blue{background:var(--blue-lt);color:var(--blue-dk);}
+.info-amber{background:var(--amber-lt);color:var(--amber-dk);}
+.info-teal{background:var(--teal-lt);color:var(--teal-dk);}
+.success-banner{background:var(--green-lt);border:1px solid #97C459;border-radius:var(--r);padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+.tag-row{display:flex;gap:5px;flex-wrap:wrap;}
+.pdf-preview{background:#F5F4EF;border:1px solid #DDD;border-radius:var(--r);padding:14px;font-size:11px;}
+.pdf-field-row{display:flex;gap:6px;padding:4px 0;border-bottom:1px solid #E0DFDA;}
+.pdf-field-row:last-child{border-bottom:none;}
+.pdf-lbl{color:#888;width:130px;flex-shrink:0;}
+.pdf-val{color:#2C2C2A;font-weight:500;}
+.pdf-goal-item{background:#fff;border-radius:6px;padding:8px 10px;margin-bottom:4px;}
+.pdf-goal-txt{font-size:11px;color:#2C2C2A;line-height:1.4;}
+.pdf-chips{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.pdf-chip{font-size:9px;background:#F0EFE9;color:#666;padding:2px 6px;border-radius:3px;}
+.anim-in{animation:fadeUp .25s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hidden{display:none!important;}
+.page-screen{display:none;flex-direction:column;gap:16px;}
+.page-screen.active{display:flex;animation:fadeUp .2s ease both;}
+.interview-bubble-ai{background:var(--teal-lt);border-radius:10px 10px 10px 2px;padding:10px 12px;font-size:12px;color:var(--teal-dk);max-width:85%;line-height:1.5;margin-bottom:8px;}
+.interview-bubble-user{background:var(--teal);border-radius:10px 10px 2px 10px;padding:10px 12px;font-size:12px;color:#fff;max-width:80%;margin-left:auto;line-height:1.5;margin-bottom:8px;}
+.timer-fill-bar{height:14px;border-radius:7px;transition:width .3s,background .5s;}
+.opt-btn{background:var(--gray-bg);border:1px solid var(--gray-border);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--text);cursor:pointer;transition:all .15s;line-height:1.5;text-align:left;width:100%;font-family:var(--font);margin-bottom:5px;}
+.opt-btn:hover{background:var(--surface);border-color:var(--gray-mid);}
+.opt-btn.correct{background:var(--teal-lt);border-color:var(--teal-md);color:var(--teal-dk);}
+.opt-btn.wrong{background:var(--amber-lt);border-color:var(--amber);color:var(--amber-dk);}
+.tag-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.tfilter{padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--gray-border);cursor:pointer;background:var(--surface);color:var(--text-2);transition:all .15s;}
+.tfilter.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon"><i class="ti ti-leaf"></i></div>
+      <div><div class="logo-text">LaunchReady</div><div class="logo-sub">Prototype v1.0</div></div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Student app</div>
+    <div class="sidebar-item" data-portal="student" data-page="home" onclick="nav(this)"><i class="ti ti-home"></i><span class="si-label">Home</span></div>
+    <div class="sidebar-item" data-portal="student" data-page="tasks" onclick="nav(this)"><i class="ti ti-checklist"></i><span class="si-label">Task coach</span></div>
+    <div class="sidebar-item" data-portal="student" data-page="progress" onclick="nav(this)"><i class="ti ti-chart-bar"></i><span class="si-label">Progress</span></div>
+    <div class="sidebar-item" data-portal="student" data-page="interview" onclick="nav(this)"><i class="ti ti-sparkles"></i><span class="si-label">AI interview</span></div>
+    <div class="sidebar-item" data-portal="student" data-page="profile" onclick="nav(this)"><i class="ti ti-user"></i><span class="si-label">Profile</span></div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Parent app</div>
+    <div class="sidebar-item" data-portal="parent" data-page="parent-home" onclick="nav(this)"><i class="ti ti-home"></i><span class="si-label">Home</span></div>
+    <div class="sidebar-item" data-portal="parent" data-page="parent-progress" onclick="nav(this)"><i class="ti ti-chart-bar"></i><span class="si-label">Progress</span></div>
+    <div class="sidebar-item" data-portal="parent" data-page="parent-alerts" onclick="nav(this)"><i class="ti ti-bell"></i><span class="si-label">Alerts</span><span class="si-badge" style="background:#534AB7;color:#fff;">4</span></div>
+    <div class="sidebar-item" data-portal="parent" data-page="parent-settings" onclick="nav(this)"><i class="ti ti-settings"></i><span class="si-label">Settings</span></div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Educator dashboard</div>
+    <div class="sidebar-item" data-portal="edu" data-page="edu-students" onclick="nav(this)"><i class="ti ti-users"></i><span class="si-label">My students</span></div>
+    <div class="sidebar-item" data-portal="edu" data-page="edu-iep" onclick="nav(this)"><i class="ti ti-file-text"></i><span class="si-label">IEP goals</span></div>
+    <div class="sidebar-item" data-portal="edu" data-page="edu-reports" onclick="nav(this)"><i class="ti ti-download"></i><span class="si-label">Reports</span></div>
+    <div class="sidebar-item" data-portal="edu" data-page="edu-settings" onclick="nav(this)"><i class="ti ti-settings"></i><span class="si-label">Settings</span></div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">School district</div>
+    <div class="sidebar-item" data-portal="school" data-page="school-overview" onclick="nav(this)"><i class="ti ti-building-community"></i><span class="si-label">District overview</span></div>
+    <div class="sidebar-item" data-portal="school" data-page="school-caseloads" onclick="nav(this)"><i class="ti ti-users"></i><span class="si-label">Student caseloads</span></div>
+    <div class="sidebar-item" data-portal="school" data-page="school-iep" onclick="nav(this)"><i class="ti ti-file-text"></i><span class="si-label">IEP goals</span></div>
+    <div class="sidebar-item" data-portal="school" data-page="school-reports" onclick="nav(this)"><i class="ti ti-chart-bar"></i><span class="si-label">Reports</span></div>
+    <div class="sidebar-item" data-portal="school" data-page="school-settings" onclick="nav(this)"><i class="ti ti-settings"></i><span class="si-label">Settings</span></div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Employer portal</div>
+    <div class="sidebar-item" data-portal="emp" data-page="emp-pipeline" onclick="nav(this)"><i class="ti ti-briefcase"></i><span class="si-label">Candidate pipeline</span></div>
+    <div class="sidebar-item" data-portal="emp" data-page="emp-scenarios" onclick="nav(this)"><i class="ti ti-books"></i><span class="si-label">Scenario library</span></div>
+    <div class="sidebar-item" data-portal="emp" data-page="emp-analytics" onclick="nav(this)"><i class="ti ti-chart-bar"></i><span class="si-label">Analytics</span></div>
+    <div class="sidebar-item" data-portal="emp" data-page="emp-ats" onclick="nav(this)"><i class="ti ti-plug"></i><span class="si-label">ATS settings</span></div>
+  </div>
+</nav>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-portal-tag" id="portal-tag"></div>
+    <div class="topbar-breadcrumb" id="breadcrumb"></div>
+    <div class="topbar-right">
+      <div class="topbar-notif" onclick="nav(document.querySelector('[data-page=parent-alerts]'))"><i class="ti ti-bell"></i><div class="notif-pip"></div></div>
+      <div class="topbar-avatar" id="topbar-av" style="background:var(--teal-lt);color:var(--teal-dk);">JT</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ════ STUDENT HOME ════ -->
+  <div class="page-screen" id="pg-home">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="phone-outer" style="flex-shrink:0;padding:0;">
+        <div class="phone">
+          <div class="phone-status" style="background:var(--teal);"><span class="ptime">9:41</span><div class="picons"><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div></div>
+          <div class="phone-header" style="background:var(--teal);"><div class="ph-sml">Good morning</div><div class="ph-big">Jordan 👋</div></div>
+          <div class="phone-body">
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">How are you feeling?</div>
+            <div style="display:flex;gap:6px;" id="mood-btns">
+              <div style="flex:1;background:var(--gray-bg);border-radius:8px;padding:7px 4px;text-align:center;cursor:pointer;font-size:18px;border:1.5px solid transparent;" onclick="pickMood(this)">😌</div>
+              <div style="flex:1;background:var(--teal-lt);border-radius:8px;padding:7px 4px;text-align:center;cursor:pointer;font-size:18px;border:1.5px solid var(--teal-md);" onclick="pickMood(this)">🙂</div>
+              <div style="flex:1;background:var(--gray-bg);border-radius:8px;padding:7px 4px;text-align:center;cursor:pointer;font-size:18px;border:1.5px solid transparent;" onclick="pickMood(this)">😤</div>
+              <div style="flex:1;background:var(--gray-bg);border-radius:8px;padding:7px 4px;text-align:center;cursor:pointer;font-size:18px;border:1.5px solid transparent;" onclick="pickMood(this)">😔</div>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Pillars</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div style="background:var(--gray-bg);border-radius:8px;padding:9px;cursor:pointer;" onclick="nav(document.querySelector('[data-page=tasks]'))">
+                <div style="font-size:16px;margin-bottom:3px;">🧠</div>
+                <div style="font-size:10px;font-weight:500;color:var(--text);">Daily coach</div>
+                <div style="height:3px;background:var(--gray-border);border-radius:2px;margin-top:4px;"><div style="height:3px;width:72%;background:var(--teal);border-radius:2px;"></div></div>
+              </div>
+              <div style="background:var(--gray-bg);border-radius:8px;padding:9px;cursor:pointer;" onclick="nav(document.querySelector('[data-page=interview]'))">
+                <div style="font-size:16px;margin-bottom:3px;">💼</div>
+                <div style="font-size:10px;font-weight:500;color:var(--text);">Job readiness</div>
+                <div style="height:3px;background:var(--gray-border);border-radius:2px;margin-top:4px;"><div style="height:3px;width:45%;background:var(--teal);border-radius:2px;"></div></div>
+              </div>
+              <div style="background:var(--gray-bg);border-radius:8px;padding:9px;">
+                <div style="font-size:16px;margin-bottom:3px;">🏠</div>
+                <div style="font-size:10px;font-weight:500;color:var(--text);">Ind. living</div>
+                <div style="height:3px;background:var(--gray-border);border-radius:2px;margin-top:4px;"><div style="height:3px;width:28%;background:var(--teal);border-radius:2px;"></div></div>
+              </div>
+              <div style="background:var(--gray-bg);border-radius:8px;padding:9px;">
+                <div style="font-size:16px;margin-bottom:3px;">💬</div>
+                <div style="font-size:10px;font-weight:500;color:var(--text);">Social nav</div>
+                <div style="height:3px;background:var(--gray-border);border-radius:2px;margin-top:4px;"><div style="height:3px;width:55%;background:var(--teal);border-radius:2px;"></div></div>
+              </div>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Today's tasks</div>
+            <div style="background:var(--surface);border:1px solid var(--gray-border);border-radius:8px;padding:8px 10px;">
+              <div class="list-row" style="padding:5px 0;" id="ht1"><div style="width:18px;height:18px;border-radius:50%;background:var(--teal);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;"><i class="ti ti-check" style="font-size:10px;color:#fff;"></i></div><div style="flex:1;font-size:11px;color:var(--text-3);text-decoration:line-through;">Pack bag for interview</div><div style="font-size:10px;color:var(--text-3);">5m</div></div>
+              <div class="list-row" style="padding:5px 0;" id="ht2"><div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-border);cursor:pointer;flex-shrink:0;" onclick="checkHomeTask(this)"></div><div style="flex:1;font-size:11px;color:var(--text);">Practice interview questions</div><div style="font-size:10px;color:var(--text-3);">20m</div></div>
+              <div class="list-row" style="padding:5px 0;border-bottom:none;" id="ht3"><div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--gray-border);cursor:pointer;flex-shrink:0;" onclick="checkHomeTask(this)"></div><div style="flex:1;font-size:11px;color:var(--text);">Choose your outfit</div><div style="font-size:10px;color:var(--text-3);">5m</div></div>
+            </div>
+          </div>
+          <div class="phone-nav">
+            <div class="pni active" onclick="nav(document.querySelector('[data-page=home]'))"><i class="ti ti-home"></i><span>Home</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=tasks]'))"><i class="ti ti-checklist"></i><span>Tasks</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=interview]'))"><i class="ti ti-sparkles"></i><span>AI</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=progress]'))"><i class="ti ti-trophy"></i><span>Progress</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=profile]'))"><i class="ti ti-user"></i><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:12px;">
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Jordan's week at a glance</div><span class="bdg bdg-teal"><i class="ti ti-flame" style="font-size:11px;"></i> 7-day streak</span></div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-lbl">Sessions this week</div><div class="stat-val">12</div><div class="stat-sub">+4 vs last week</div></div>
+            <div class="stat-card"><div class="stat-lbl">Goals met</div><div class="stat-val">3</div><div class="stat-sub">This month</div></div>
+            <div class="stat-card"><div class="stat-lbl">Overall progress</div><div class="stat-val">61%</div><div class="stat-sub">All pillars</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Quick actions</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn btn-teal" onclick="nav(document.querySelector('[data-page=tasks]'))"><i class="ti ti-checklist" style="font-size:13px;"></i> Open task coach</button>
+            <button class="btn btn-teal" onclick="nav(document.querySelector('[data-page=interview]'))"><i class="ti ti-sparkles" style="font-size:13px;"></i> Start AI interview</button>
+            <button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=progress]'))"><i class="ti ti-chart-bar" style="font-size:13px;"></i> View my progress</button>
+            <button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=profile]'))"><i class="ti ti-user" style="font-size:13px;"></i> Edit my profile</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Recent milestones</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="background:var(--teal-lt);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;"><i class="ti ti-award" style="font-size:18px;color:var(--teal-dk);"></i><div><div style="font-size:12px;font-weight:500;color:var(--teal-dk);">First mock interview completed</div><div style="font-size:11px;color:var(--teal);margin-top:1px;">May 18, 2025</div></div></div>
+            <div style="background:var(--teal-lt);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;"><i class="ti ti-flame" style="font-size:18px;color:var(--teal-dk);"></i><div><div style="font-size:12px;font-weight:500;color:var(--teal-dk);">7-day streak achieved</div><div style="font-size:11px;color:var(--teal);margin-top:1px;">May 20, 2025</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ STUDENT TASKS ════ -->
+  <div class="page-screen" id="pg-tasks">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="phone-outer" style="flex-shrink:0;padding:0;">
+        <div class="phone">
+          <div class="phone-status" style="background:var(--teal);"><span class="ptime">9:41</span><div class="picons"><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div></div>
+          <div class="phone-header" style="background:var(--teal);"><div class="ph-sml">Daily executive coach</div><div class="ph-big">Get ready for interview</div></div>
+          <div class="phone-body">
+            <div style="background:var(--gray-bg);border-radius:8px;padding:10px 12px;">
+              <div style="height:12px;background:var(--gray-border);border-radius:6px;overflow:hidden;"><div id="timer-fill" class="timer-fill-bar" style="width:62%;background:var(--teal);"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:4px;"><span id="timer-label">37 min left</span><span>60 min</span></div>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Steps</div>
+            <div id="task-steps" style="display:flex;flex-direction:column;gap:4px;"></div>
+            <div id="reframe-box" class="hidden" style="background:var(--teal-lt);border:1px solid var(--teal-md);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--teal-dk);line-height:1.5;"></div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-teal" style="flex:1;justify-content:center;font-size:11px;" onclick="triggerReframe()"><i class="ti ti-refresh" style="font-size:12px;"></i> Reframe step</button>
+              <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:11px;" onclick="flagStep()"><i class="ti ti-flag" style="font-size:12px;"></i> Mark difficult</button>
+            </div>
+          </div>
+          <div class="phone-nav">
+            <div class="pni" onclick="nav(document.querySelector('[data-page=home]'))"><i class="ti ti-home"></i><span>Home</span></div>
+            <div class="pni active"><i class="ti ti-checklist"></i><span>Tasks</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=interview]'))"><i class="ti ti-sparkles"></i><span>AI</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=progress]'))"><i class="ti ti-trophy"></i><span>Progress</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=profile]'))"><i class="ti ti-user"></i><span>Profile</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:12px;">
+        <div class="card">
+          <div class="sec-hd"><div><div class="sec-title">Task breakdown — Get ready for interview</div><div class="sec-sub">AI-generated · 5 steps</div></div><span class="bdg bdg-teal">3 / 5 done</span></div>
+          <div id="task-detail-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Progress towards IEP goal</div></div>
+          <div style="background:var(--blue-lt);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="nav(document.querySelector('[data-page=edu-iep]'))">
+            <i class="ti ti-file-text" style="font-size:18px;color:var(--blue-dk);flex-shrink:0;"></i>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--blue-dk);">Demonstrate job application skills</div><div style="font-size:10px;color:var(--blue);margin-top:2px;">9 sessions logged as evidence → view in educator portal</div></div>
+            <i class="ti ti-arrow-right" style="font-size:14px;color:var(--blue);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ STUDENT PROGRESS ════ -->
+  <div class="page-screen" id="pg-progress">
+    <div class="card">
+      <div class="sec-hd"><div class="sec-title">Overall progress — Jordan Taylor</div><span class="bdg bdg-teal">61% complete</span></div>
+      <div class="chart-bar-rows">
+        <div class="prog-row"><div class="prog-lbl">Daily coach</div><div class="prog-track"><div class="prog-fill" style="width:72%;background:var(--teal);"></div></div><div class="prog-pct">72%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Job readiness</div><div class="prog-track"><div class="prog-fill" style="width:45%;background:var(--teal);"></div></div><div class="prog-pct">45%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Social navigation</div><div class="prog-track"><div class="prog-fill" style="width:55%;background:var(--teal);"></div></div><div class="prog-pct">55%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Ind. living</div><div class="prog-track"><div class="prog-fill" style="width:28%;background:var(--teal);"></div></div><div class="prog-pct">28%</div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">Recent milestones</div>
+        <div style="background:var(--teal-lt);border-radius:8px;padding:9px 11px;margin-bottom:6px;display:flex;align-items:center;gap:8px;"><i class="ti ti-award" style="font-size:16px;color:var(--teal-dk);"></i><div><div style="font-size:12px;font-weight:500;color:var(--teal-dk);">First mock interview</div><div style="font-size:10px;color:var(--teal);">May 18</div></div></div>
+        <div style="background:var(--teal-lt);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:8px;"><i class="ti ti-flame" style="font-size:16px;color:var(--teal-dk);"></i><div><div style="font-size:12px;font-weight:500;color:var(--teal-dk);">7-day streak</div><div style="font-size:10px;color:var(--teal);">May 20</div></div></div>
+      </div>
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">IEP goals linked</div>
+        <div class="goal-card" onclick="nav(document.querySelector('[data-page=edu-iep]'))">
+          <div class="goal-text">Demonstrate job application skills including resume writing.</div>
+          <div class="goal-meta"><span class="bdg bdg-blue">Employment</span><span class="bdg bdg-teal">9 sessions</span></div>
+        </div>
+        <div class="goal-card" onclick="nav(document.querySelector('[data-page=edu-iep]'))">
+          <div class="goal-text">Use public transportation independently.</div>
+          <div class="goal-meta"><span class="bdg bdg-green">Ind. living</span><span class="bdg bdg-teal">7 sessions</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-box info-teal"><i class="ti ti-arrow-right" style="font-size:13px;flex-shrink:0;margin-top:1px;"></i><span>Progress data is shared with your teacher Ms. Chen and parent Sarah Taylor. <span style="font-weight:500;cursor:pointer;text-decoration:underline;" onclick="nav(document.querySelector('[data-page=edu-students]'))">View in educator dashboard →</span></span></div>
+  </div>
+
+  <!-- ════ STUDENT INTERVIEW ════ -->
+  <div class="page-screen" id="pg-interview">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="phone-outer" style="flex-shrink:0;padding:0;">
+        <div class="phone">
+          <div class="phone-status" style="background:var(--teal);"><span class="ptime">9:41</span><div class="picons"><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div></div>
+          <div class="phone-header" style="background:var(--teal);display:flex;justify-content:space-between;align-items:flex-start;"><div><div class="ph-sml">AI interview coach</div><div class="ph-big">Retail · Casual</div></div><span class="bdg" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;"><i class="ti ti-player-record" style="font-size:9px;color:#FAC775;"></i> Live</span></div>
+          <div style="padding:12px;display:flex;flex-direction:column;gap:0;min-height:240px;" id="chat-msgs">
+            <div class="interview-bubble-ai">Hi Jordan! Let's practice. First question:<br><br>Imagine a customer looks frustrated and can't find what they need. What would you do?</div>
+            <div class="interview-bubble-user">I'd walk up to them and ask what they're looking for. Then I'd take them to the right aisle.</div>
+            <div class="interview-bubble-ai">That's great — walking with the customer shows initiative. Follow-up:<br><br>What if you didn't know where the item was?</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-top:1px solid var(--gray-border);">
+            <div style="flex:1;background:var(--gray-bg);border-radius:16px;padding:7px 11px;font-size:11px;color:var(--text-3);">Type your answer...</div>
+            <div style="width:28px;height:28px;background:var(--gray-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-microphone" style="font-size:13px;color:var(--text-2);"></i></div>
+            <div style="width:28px;height:28px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-arrow-up" style="font-size:13px;color:#fff;"></i></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:12px;">
+        <div class="card">
+          <div class="sec-title" style="margin-bottom:10px;">Session configuration</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Industry</div><select><option>Retail</option><option>Technology</option><option>Food service</option><option>Healthcare</option></select></div>
+            <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Format</div><select><option>1-on-1</option><option>Panel of 2</option><option>Phone screen</option></select></div>
+            <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Tone</div><select><option selected>Casual</option><option>Formal</option></select></div>
+            <div><div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">Modality</div><select><option>In-person</option><option>Video</option><option>Phone</option></select></div>
+          </div>
+          <button class="btn btn-teal" style="width:100%;justify-content:center;"><i class="ti ti-player-play" style="font-size:13px;"></i> New session</button>
+        </div>
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Past debriefs</div><span class="bdg bdg-blue">2 sessions</span></div>
+          <div class="list-row"><div style="flex:1;"><div class="rname" style="font-size:12px;">Retail · Casual · May 18</div><div class="rsub">What went well: walked customer to aisle, checked store app</div></div><span class="bdg bdg-green">Completed</span></div>
+          <div class="list-row" style="border-bottom:none;"><div style="flex:1;"><div class="rname" style="font-size:12px;">Technology · Formal · May 15</div><div class="rsub">One skill to develop: opening summary sentence</div></div><span class="bdg bdg-teal">Completed</span></div>
+        </div>
+        <div class="info-box info-blue"><i class="ti ti-info-circle" style="font-size:14px;flex-shrink:0;"></i><span>Interview sessions are linked to your IEP goal: <em>Demonstrate job application skills</em>. Each session counts as evidence. <span style="font-weight:500;cursor:pointer;text-decoration:underline;" onclick="nav(document.querySelector('[data-page=edu-iep]'))">View in educator portal →</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ STUDENT PROFILE ════ -->
+  <div class="page-screen" id="pg-profile">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex-wrap:wrap;">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--gray-border);">
+          <div style="width:50px;height:50px;border-radius:50%;background:var(--teal-lt);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--teal-dk);">JT</div>
+          <div><div style="font-size:15px;font-weight:600;color:var(--text);">Jordan Taylor</div><div style="font-size:12px;color:var(--text-3);">Student · Age 17 · Fairfax County</div></div>
+        </div>
+        <div class="sec-sub" style="margin-bottom:8px;">Sensory & accessibility preferences</div>
+        <div class="card-sm">
+          <div class="tog-row"><div><div class="tog-lbl">Reduce animations</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">Sound alerts off</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">High contrast mode</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">Font size — large</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">Employment interests</div>
+        <div class="tag-row" style="margin-bottom:14px;">
+          <span class="bdg bdg-teal">Technology</span><span class="bdg bdg-teal">Retail</span><span class="bdg bdg-teal">Food service</span>
+          <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;"><i class="ti ti-plus" style="font-size:11px;"></i> Add</button>
+        </div>
+        <div class="sec-title" style="margin-bottom:8px;">Linked accounts</div>
+        <div class="list-row"><div class="av-sm" style="background:var(--purple-lt);color:var(--purple-dk);">ST</div><div style="flex:1;"><div class="rname" style="font-size:12px;">Sarah Taylor</div><div class="rsub">Parent · Consent given May 1</div></div><span class="bdg bdg-green">Linked</span><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;" onclick="nav(document.querySelector('[data-page=parent-home]'))">View →</button></div>
+        <div class="list-row" style="border-bottom:none;"><div class="av-sm" style="background:var(--blue-lt);color:var(--blue-dk);">MC</div><div style="flex:1;"><div class="rname" style="font-size:12px;">Ms. Chen</div><div class="rsub">Teacher · Fairfax County Schools</div></div><span class="bdg bdg-blue">Linked</span><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;" onclick="nav(document.querySelector('[data-page=edu-students]'))">View →</button></div>
+      </div>
+      <div class="card" style="grid-column:1/-1;">
+        <div class="sec-title" style="margin-bottom:10px;">Communication preferences</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="card-sm">
+            <div class="tog-row"><div><div class="tog-lbl">Push notifications</div><div class="tog-sub">Milestone and streak alerts</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+            <div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Streak reminders</div><div class="tog-sub">Daily check-in reminder</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          </div>
+          <div class="card-sm">
+            <div class="tog-row"><div><div class="tog-lbl">Parent can view progress</div><div class="tog-sub">Sarah Taylor</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+            <div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Teacher can view AI sessions</div><div class="tog-sub">Ms. Chen</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARENT HOME ════ -->
+  <div class="page-screen" id="pg-parent-home">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="phone-outer" style="flex-shrink:0;padding:0;">
+        <div class="phone">
+          <div class="phone-status" style="background:var(--purple);"><span class="ptime">9:41</span><div class="picons"><i class="ti ti-wifi"></i><i class="ti ti-battery-2"></i></div></div>
+          <div class="phone-header" style="background:var(--purple);"><div class="ph-sml">Family dashboard</div><div class="ph-big">Hi, Sarah</div></div>
+          <div class="phone-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div class="stat-card"><div class="stat-lbl">Sessions</div><div class="stat-val" style="font-size:18px;">12</div><div class="stat-sub">+4 this week</div></div>
+              <div class="stat-card"><div class="stat-lbl">Goals met</div><div class="stat-val" style="font-size:18px;">3</div><div class="stat-sub">This month</div></div>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Jordan's pillars</div>
+            <div class="chart-bar-rows">
+              <div class="prog-row" style="margin-bottom:4px;"><div class="prog-lbl" style="width:80px;font-size:10px;">Daily coach</div><div class="prog-track" style="height:6px;"><div class="prog-fill" style="width:72%;background:var(--purple);height:6px;"></div></div><div class="prog-pct" style="font-size:10px;">72%</div></div>
+              <div class="prog-row" style="margin-bottom:4px;"><div class="prog-lbl" style="width:80px;font-size:10px;">Job readiness</div><div class="prog-track" style="height:6px;"><div class="prog-fill" style="width:45%;background:var(--purple);height:6px;"></div></div><div class="prog-pct" style="font-size:10px;">45%</div></div>
+              <div class="prog-row" style="margin-bottom:0;"><div class="prog-lbl" style="width:80px;font-size:10px;">Social skills</div><div class="prog-track" style="height:6px;"><div class="prog-fill" style="width:55%;background:var(--purple);height:6px;"></div></div><div class="prog-pct" style="font-size:10px;">55%</div></div>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;">Latest alert</div>
+            <div style="background:var(--purple-lt);border-radius:8px;padding:9px 11px;"><div style="font-size:11px;font-weight:500;color:var(--purple-dk);">Milestone reached</div><div style="font-size:10px;color:var(--purple);margin-top:2px;">Jordan completed first mock interview · Today</div></div>
+          </div>
+          <div class="phone-nav">
+            <div class="pni active" style="" onclick="nav(document.querySelector('[data-page=parent-home]'))"><i class="ti ti-home" style="color:var(--purple);"></i><span style="color:var(--purple);">Home</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=parent-progress]'))"><i class="ti ti-chart-bar"></i><span>Progress</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=parent-alerts]'))"><i class="ti ti-bell"></i><span>Alerts</span></div>
+            <div class="pni" onclick="nav(document.querySelector('[data-page=parent-settings]'))"><i class="ti ti-settings"></i><span>Settings</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:12px;">
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Jordan's account</div><button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=progress]'))"><i class="ti ti-external-link" style="font-size:12px;"></i> Student view</button></div>
+          <div class="stats-grid" style="margin-bottom:12px;">
+            <div class="stat-card"><div class="stat-lbl">Weekly sessions</div><div class="stat-val">12</div></div>
+            <div class="stat-card"><div class="stat-lbl">Overall progress</div><div class="stat-val">61%</div></div>
+            <div class="stat-card"><div class="stat-lbl">IEP goals</div><div class="stat-val">7</div></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-purple" onclick="nav(document.querySelector('[data-page=parent-progress]'))"><i class="ti ti-chart-bar" style="font-size:12px;"></i> Full progress</button>
+            <button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=edu-iep]'))"><i class="ti ti-file-text" style="font-size:12px;"></i> IEP goals</button>
+            <button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=parent-alerts]'))"><i class="ti ti-bell" style="font-size:12px;"></i> Alerts (4)</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sec-hd"><div class="sec-title">Recent alerts</div><button class="btn btn-ghost" style="font-size:11px;" onclick="nav(document.querySelector('[data-page=parent-alerts]'))">See all →</button></div>
+          <div class="notif-item"><div class="ndot" style="background:var(--purple);"></div><div><div class="ntitle" style="font-size:12px;">Milestone reached</div><div class="nbody" style="font-size:11px;">Jordan completed the mock interview module for the first time.</div><div class="ntime">Today, 8:45 am</div></div></div>
+          <div class="notif-item" style="border-bottom:none;"><div class="ndot" style="background:var(--amber);"></div><div><div class="ntitle" style="font-size:12px;">Step flagged as difficult</div><div class="nbody" style="font-size:11px;">Jordan marked "practice introduction" as overwhelming.</div><div class="ntime">Yesterday, 3:12 pm</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARENT PROGRESS ════ -->
+  <div class="page-screen" id="pg-parent-progress">
+    <div class="card">
+      <div class="sec-hd"><div class="sec-title">Jordan's progress — parent view</div><button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=progress]'))"><i class="ti ti-external-link" style="font-size:12px;"></i> Student view</button></div>
+      <div class="chart-bar-rows">
+        <div class="prog-row"><div class="prog-lbl">Daily coach</div><div class="prog-track"><div class="prog-fill" style="width:72%;background:var(--purple);"></div></div><div class="prog-pct">72%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Job readiness</div><div class="prog-track"><div class="prog-fill" style="width:45%;background:var(--purple);"></div></div><div class="prog-pct">45%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Social navigation</div><div class="prog-track"><div class="prog-fill" style="width:55%;background:var(--purple);"></div></div><div class="prog-pct">55%</div></div>
+        <div class="prog-row"><div class="prog-lbl">Ind. living</div><div class="prog-track"><div class="prog-fill" style="width:28%;background:var(--purple);"></div></div><div class="prog-pct">28%</div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">IEP goals</div>
+        <div class="goal-card" onclick="nav(document.querySelector('[data-page=edu-iep]'))"><div class="goal-text">Demonstrate job application skills including resume writing.</div><div class="goal-meta"><span class="bdg bdg-blue">Employment</span><span class="bdg bdg-teal">9 sessions</span></div></div>
+        <div class="goal-card" onclick="nav(document.querySelector('[data-page=edu-iep]'))"><div class="goal-text">Use public transportation independently.</div><div class="goal-meta"><span class="bdg bdg-green">Ind. living</span><span class="bdg bdg-teal">7 sessions</span></div></div>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:11px;" onclick="nav(document.querySelector('[data-page=edu-iep]'))">View all 7 IEP goals →</button>
+      </div>
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">Teacher contact</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><div class="av" style="background:var(--blue-lt);color:var(--blue-dk);">MC</div><div><div style="font-size:13px;font-weight:500;">Ms. Chen</div><div style="font-size:11px;color:var(--text-3);">IEP case manager · Westfield HS</div></div></div>
+        <button class="btn btn-blue" style="width:100%;justify-content:center;" onclick="nav(document.querySelector('[data-page=edu-students]'))"><i class="ti ti-external-link" style="font-size:12px;"></i> Educator dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PARENT ALERTS ════ -->
+  <div class="page-screen" id="pg-parent-alerts">
+    <div class="card">
+      <div class="sec-hd"><div class="sec-title">Alerts</div><select style="font-size:11px;padding:4px 8px;"><option>All alerts</option><option>Milestones</option><option>Flagged steps</option><option>IEP updates</option></select></div>
+      <div class="notif-item"><div class="ndot" style="background:var(--purple);"></div><div><div class="ntitle">Milestone reached</div><div class="nbody">Jordan completed the mock interview module for the first time.</div><div class="ntime">Today, 8:45 am</div></div></div>
+      <div class="notif-item"><div class="ndot" style="background:var(--amber);"></div><div><div class="ntitle">Step flagged as difficult</div><div class="nbody">Jordan marked "practice introduction" as overwhelming. AI reframe was sent.</div><div class="ntime">Yesterday, 3:12 pm</div></div></div>
+      <div class="notif-item"><div class="ndot" style="background:var(--purple);"></div><div><div class="ntitle">7-day streak achieved</div><div class="nbody">Jordan has used the app 7 days in a row.</div><div class="ntime">May 19, 6:00 am</div></div></div>
+      <div class="notif-item" style="border-bottom:none;"><div class="ndot" style="background:var(--green);"></div><div><div class="ntitle">IEP report ready</div><div class="nbody">Indicator 13 PDF for 2024–2025 is available to download. <span style="color:var(--blue-dk);font-weight:500;cursor:pointer;" onclick="nav(document.querySelector('[data-page=edu-reports]'))">View in educator portal →</span></div><div class="ntime">May 18, 2:30 pm</div></div></div>
+    </div>
+  </div>
+
+  <!-- ════ PARENT SETTINGS ════ -->
+  <div class="page-screen" id="pg-parent-settings">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">Notification preferences</div>
+        <div class="info-box info-amber" style="margin-bottom:10px;"><i class="ti ti-info-circle" style="font-size:13px;flex-shrink:0;"></i> All notifications are off by default. You must opt in.</div>
+        <div class="card-sm">
+          <div class="tog-row"><div><div class="tog-lbl">Milestone alerts</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">Step flagged as difficult</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">Weekly summary email</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row"><div><div class="tog-lbl">Caregiver wellness prompts</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">IEP report ready</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title" style="margin-bottom:10px;">Account</div>
+        <div class="card-sm">
+          <div class="tog-row"><div><div class="tog-lbl">Email</div><div class="tog-sub">sarah.taylor@email.com</div></div><button class="btn btn-ghost" style="font-size:11px;">Edit</button></div>
+          <div class="tog-row"><div><div class="tog-lbl">MFA (optional for parents)</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Jordan can see my alerts</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+        </div>
+        <div class="sec-title" style="margin:12px 0 8px;">Privacy</div>
+        <div class="card-sm">
+          <div class="tog-row"><div><div class="tog-lbl">Share progress with teacher</div><div class="tog-sub">Ms. Chen at Westfield HS</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+          <div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">PostHog analytics (minor)</div><div class="tog-sub">Cookieless mode — COPPA compliant</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ EDUCATOR STUDENTS ════ -->
+  <div class="page-screen" id="pg-edu-students">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-lbl">Active students</div><div class="stat-val">14</div></div>
+      <div class="stat-card"><div class="stat-lbl">Avg progress</div><div class="stat-val">61%</div></div>
+      <div class="stat-card"><div class="stat-lbl">Goals met</div><div class="stat-val">8</div><div class="stat-sub">This semester</div></div>
+      <div class="stat-card"><div class="stat-lbl">Pending reports</div><div class="stat-val">3</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-hd"><div class="sec-title">My student caseload</div><div style="display:flex;gap:8px;"><select style="font-size:11px;"><option>All pillars</option><option>Job readiness</option><option>Daily coach</option></select><button class="btn btn-ghost" onclick="nav(document.querySelector('[data-page=edu-reports]'))"><i class="ti ti-download" style="font-size:12px;"></i> Export Indicator 13</button></div></div>
+      <div id="student-list">
+        <div class="list-row student-row" data-student="jordan" style="cursor:pointer;" onclick="selectStudent('jordan')"><div class="av" style="background:var(--teal-lt);color:var(--teal-dk);">JT</div><div style="flex:1;"><div class="rname">Jordan Taylor</div><div class="rsub">7 IEP goals · Daily coach, Job readiness</div><div class="rprog-bar"><div class="rprog-fill" style="width:72%;background:var(--teal);"></div></div></div><span class="bdg bdg-green">72%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="event.stopPropagation();nav(document.querySelector('[data-page=edu-iep]'))">IEP goals →</button></div>
+        <div class="list-row student-row" data-student="alex" style="cursor:pointer;" onclick="selectStudent('alex')"><div class="av" style="background:var(--blue-lt);color:var(--blue-dk);">AM</div><div style="flex:1;"><div class="rname">Alex Martinez</div><div class="rsub">5 IEP goals · Social navigation, Ind. living</div><div class="rprog-bar"><div class="rprog-fill" style="width:48%;background:var(--blue);"></div></div></div><span class="bdg bdg-amber">48%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="event.stopPropagation();nav(document.querySelector('[data-page=edu-iep]'))">IEP goals →</button></div>
+        <div class="list-row student-row" data-student="sam" style="cursor:pointer;" onclick="selectStudent('sam')"><div class="av" style="background:var(--purple-lt);color:var(--purple-dk);">SR</div><div style="flex:1;"><div class="rname">Sam Rivera</div><div class="rsub">6 IEP goals · Job readiness, Task coach</div><div class="rprog-bar"><div class="rprog-fill" style="width:85%;background:var(--teal);"></div></div></div><span class="bdg bdg-green">85%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="event.stopPropagation();nav(document.querySelector('[data-page=edu-iep]'))">IEP goals →</button></div>
+        <div class="list-row student-row" data-student="kim" style="cursor:pointer;border-bottom:none;" onclick="selectStudent('kim')"><div class="av" style="background:var(--amber-lt);color:var(--amber-dk);">KP</div><div style="flex:1;"><div class="rname">Kim Park</div><div class="rsub">4 IEP goals · Daily coach, Social skills</div><div class="rprog-bar"><div class="rprog-fill" style="width:34%;background:var(--amber);"></div></div></div><span class="bdg bdg-amber">34%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="event.stopPropagation();nav(document.querySelector('[data-page=edu-iep]'))">IEP goals →</button></div>
+      </div>
+    </div>
+    <div id="student-detail-box" class="hidden">
+      <div class="success-banner"><div><div style="font-size:13px;font-weight:600;color:var(--green-dk);" id="sd-name">Jordan Taylor</div><div style="font-size:11px;color:var(--green);margin-top:2px;" id="sd-sub">72% overall · 7 IEP goals</div></div><div style="margin-left:auto;display:flex;gap:6px;"><button class="btn btn-teal" onclick="nav(document.querySelector('[data-page=edu-iep]'))">View IEP goals</button><button class="btn btn-blue" onclick="nav(document.querySelector('[data-page=edu-reports]'))">Generate report</button></div></div>
+    </div>
+  </div>
+
+  <!-- ════ EDUCATOR IEP ════ -->
+  <div class="page-screen" id="pg-edu-iep">
+    <div class="sec-hd"><div><div class="sec-title">IEP goals — all students</div><div class="sec-sub">Click a goal to see module mappings</div></div><div style="display:flex;gap:8px;"><button class="btn btn-blue" onclick="nav(document.querySelector('[data-page=edu-reports]'))"><i class="ti ti-upload" style="font-size:12px;"></i> Import CSV</button><button class="btn btn-ghost"><i class="ti ti-plus" style="font-size:12px;"></i> Add goal</button></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;"><select style="font-size:11px;"><option>All students</option><option>Jordan Taylor</option><option>Alex Martinez</option><option>Sam Rivera</option><option>Kim Park</option></select><select style="font-size:11px;"><option>All categories</option><option>Employment</option><option>Education</option><option>Independent living</option></select></div>
+    <div style="display:flex;gap:14px;">
+      <div style="flex:1;">
+        <div class="goal-card" id="gc1" onclick="selectGoal('gc1','Demonstrate job application skills including resume writing and interview preparation.','Employment','Jordan Taylor',['Job readiness · mock_interview','Job readiness · strengths_portfolio'],'9 sessions')"><div class="goal-text">Demonstrate job application skills including resume writing and interview preparation.</div><div class="goal-meta"><span class="bdg bdg-blue">Employment</span><span class="bdg bdg-teal">9 sessions</span><span class="bdg bdg-gray">Jordan Taylor</span></div></div>
+        <div class="goal-card" id="gc2" onclick="selectGoal('gc2','Identify and describe 3 workplace communication strategies for conflict.','Employment','Alex Martinez',['Social nav · emotion_decoder','Social nav · convo_scripts'],'2 sessions')"><div class="goal-text">Identify and describe 3 workplace communication strategies for conflict resolution.</div><div class="goal-meta"><span class="bdg bdg-blue">Employment</span><span class="bdg bdg-amber">2 sessions</span><span class="bdg bdg-gray">Alex Martinez</span></div></div>
+        <div class="goal-card" id="gc3" onclick="selectGoal('gc3','Use public transportation independently to reach a workplace.','Ind. living','Jordan Taylor',['Ind. living · transit_guide'],'7 sessions')"><div class="goal-text">Use public transportation independently to reach a workplace or community site.</div><div class="goal-meta"><span class="bdg bdg-green">Ind. living</span><span class="bdg bdg-teal">7 sessions</span><span class="bdg bdg-gray">Jordan Taylor</span></div></div>
+        <div class="goal-card" id="gc4" onclick="selectGoal('gc4','Manage a household budget with minimal adult support.','Ind. living','Kim Park',['Ind. living · money_management'],'1 session')"><div class="goal-text">Manage a household budget with minimal adult support for 4 consecutive weeks.</div><div class="goal-meta"><span class="bdg bdg-green">Ind. living</span><span class="bdg bdg-amber">1 session</span><span class="bdg bdg-gray">Kim Park</span></div></div>
+      </div>
+      <div id="goal-detail-panel" class="hidden" style="width:260px;flex-shrink:0;">
+        <div class="card" style="border:1px solid var(--blue-md);">
+          <div class="dp-close"><div class="dp-title" id="gdp-title">Goal detail</div><button class="dp-x" onclick="closeGoalPanel()"><i class="ti ti-x"></i></button></div>
+          <div class="dp-section">Goal info</div>
+          <div class="dp-field"><div class="dp-field-lbl">Student</div><div class="dp-field-val" id="gdp-student"></div></div>
+          <div class="dp-field"><div class="dp-field-lbl">Category</div><div class="dp-field-val" id="gdp-cat"></div></div>
+          <div class="dp-field"><div class="dp-field-lbl">Evidence</div><div class="dp-field-val" id="gdp-ev"></div></div>
+          <div class="dp-section" style="margin-top:10px;">Mapped modules</div>
+          <div id="gdp-modules" style="display:flex;flex-direction:column;gap:5px;"></div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-blue" style="width:100%;justify-content:center;" onclick="nav(document.querySelector('[data-page=edu-reports]'))"><i class="ti ti-file-export" style="font-size:12px;"></i> Export Indicator 13</button>
+            <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="nav(document.querySelector('[data-page=school-iep]'))"><i class="ti ti-building-community" style="font-size:12px;"></i> District view</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ EDUCATOR REPORTS ════ -->
+  <div class="page-screen" id="pg-edu-reports">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-lbl">Pending exports</div><div class="stat-val">3</div></div>
+      <div class="stat-card"><div class="stat-lbl">Generated this semester</div><div class="stat-val">11</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-hd"><div class="sec-title">Export queue</div></div>
+      <div class="list-row"><div style="flex:1;"><div class="rname">Jordan Taylor — Indicator 13</div><div class="rsub">2024–2025 · Requested May 20</div></div><span class="bdg bdg-green">Ready</span><button class="btn btn-blue"><i class="ti ti-download" style="font-size:12px;"></i> Download</button></div>
+      <div class="list-row"><div style="flex:1;"><div class="rname">Alex Martinez — Progress report</div><div class="rsub">2024–2025 · Requested May 21</div></div><span class="bdg bdg-amber">Generating</span><button class="btn btn-ghost">Polling...</button></div>
+      <div class="list-row" style="border-bottom:none;"><div style="flex:1;"><div class="rname">Sam Rivera — Indicator 13</div><div class="rsub">2024–2025</div></div><span class="bdg bdg-gray">Not started</span><button class="btn btn-blue" onclick="startReportGen(this)"><i class="ti ti-file-export" style="font-size:12px;"></i> Generate</button></div>
+    </div>
+    <div class="card" id="report-gen-panel" style="display:none;">
+      <div class="sec-hd"><div class="sec-title">Generating Sam Rivera — Indicator 13</div></div>
+      <div style="height:8px;background:var(--gray-border);border-radius:4px;overflow:hidden;margin-bottom:8px;"><div id="rgen-bar" style="height:8px;background:var(--blue);border-radius:4px;width:0%;transition:width .4s;"></div></div>
+      <div style="font-size:11px;color:var(--text-3);" id="rgen-status">Starting...</div>
+    </div>
+  </div>
+
+  <!-- ════ EDUCATOR SETTINGS ════ -->
+  <div class="page-screen" id="pg-edu-settings">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">Notification preferences</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">Module completion alerts</div><div class="tog-sub">Notify when a student completes a module</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div><div class="tog-row"><div><div class="tog-lbl">Step flagged as difficult</div><div class="tog-sub">Notify when a student flags a task</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div><div class="tog-row"><div><div class="tog-lbl">PDF export ready</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Milestone reached</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div></div></div>
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">Account</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">Email</div><div class="tog-sub">ms.chen@fairfax.edu</div></div><button class="btn btn-ghost" style="font-size:11px;">Edit</button></div><div class="tog-row"><div><div class="tog-lbl">MFA authentication</div><div class="tog-sub">Required for teacher role</div></div><span class="bdg bdg-green">Enabled</span></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">District SSO</div><div class="tog-sub">Google Workspace · SAML 2.0</div></div><span class="bdg bdg-blue">Connected</span></div></div></div>
+    </div>
+  </div>
+
+  <!-- ════ SCHOOL OVERVIEW ════ -->
+  <div class="page-screen" id="pg-school-overview">
+    <div class="stats-grid"><div class="stat-card"><div class="stat-lbl">Active students</div><div class="stat-val">247</div><div class="stat-sub">Across 8 schools</div></div><div class="stat-card"><div class="stat-lbl">Avg completion</div><div class="stat-val">58%</div></div><div class="stat-card"><div class="stat-lbl">IEP goals tracked</div><div class="stat-val">914</div></div><div class="stat-card"><div class="stat-lbl">Pending Ind. 13</div><div class="stat-val">6</div></div></div>
+    <div class="card"><div class="sec-hd"><div class="sec-title">Progress by school</div><button class="btn btn-blue" onclick="nav(document.querySelector('[data-page=school-reports]'))"><i class="ti ti-download" style="font-size:12px;"></i> Export all</button></div><div class="chart-bar-rows"><div class="prog-row"><div class="prog-lbl">Westfield HS</div><div class="prog-track"><div class="prog-fill" style="width:74%;background:var(--blue);"></div></div><div class="prog-pct">74%</div></div><div class="prog-row"><div class="prog-lbl">Robinson SS</div><div class="prog-track"><div class="prog-fill" style="width:61%;background:var(--blue);"></div></div><div class="prog-pct">61%</div></div><div class="prog-row"><div class="prog-lbl">Lake Braddock</div><div class="prog-track"><div class="prog-fill" style="width:48%;background:var(--amber);"></div></div><div class="prog-pct">48%</div></div><div class="prog-row"><div class="prog-lbl">South County</div><div class="prog-track"><div class="prog-fill" style="width:55%;background:var(--blue);"></div></div><div class="prog-pct">55%</div></div></div></div>
+    <div class="info-box info-blue"><i class="ti ti-arrow-right" style="font-size:13px;flex-shrink:0;"></i><span>Lake Braddock is below 50% average. <span style="font-weight:500;cursor:pointer;text-decoration:underline;" onclick="nav(document.querySelector('[data-page=school-caseloads]'))">View student caseloads →</span></span></div>
+  </div>
+
+  <!-- ════ SCHOOL CASELOADS ════ -->
+  <div class="page-screen" id="pg-school-caseloads">
+    <div class="card"><div class="sec-hd"><div class="sec-title">Student caseloads — all schools</div><button class="btn btn-blue"><i class="ti ti-download" style="font-size:12px;"></i> Export all</button></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><select style="font-size:11px;"><option>All schools</option><option>Westfield HS</option><option>Robinson SS</option><option>Lake Braddock</option></select><select style="font-size:11px;"><option>All teachers</option><option>Ms. Chen</option><option>Mr. Patel</option></select></div><div class="list-row"><div class="av" style="background:var(--teal-lt);color:var(--teal-dk);">JT</div><div style="flex:1;"><div class="rname">Jordan Taylor</div><div class="rsub">Westfield HS · Ms. Chen · 7 IEP goals</div><div class="rprog-bar"><div class="rprog-fill" style="width:72%;background:var(--teal);"></div></div></div><span class="bdg bdg-green">72%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="nav(document.querySelector('[data-page=school-iep]'))">IEP →</button></div><div class="list-row"><div class="av" style="background:var(--blue-lt);color:var(--blue-dk);">AM</div><div style="flex:1;"><div class="rname">Alex Martinez</div><div class="rsub">Robinson SS · Mr. Patel · 5 IEP goals</div><div class="rprog-bar"><div class="rprog-fill" style="width:48%;background:var(--blue);"></div></div></div><span class="bdg bdg-amber">48%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="nav(document.querySelector('[data-page=school-iep]'))">IEP →</button></div><div class="list-row"><div class="av" style="background:var(--purple-lt);color:var(--purple-dk);">SR</div><div style="flex:1;"><div class="rname">Sam Rivera</div><div class="rsub">Westfield HS · Ms. Chen · 6 IEP goals</div><div class="rprog-bar"><div class="rprog-fill" style="width:85%;background:var(--teal);"></div></div></div><span class="bdg bdg-green">85%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="nav(document.querySelector('[data-page=school-iep]'))">IEP →</button></div><div class="list-row" style="border-bottom:none;"><div class="av" style="background:var(--amber-lt);color:var(--amber-dk);">KP</div><div style="flex:1;"><div class="rname">Kim Park</div><div class="rsub">Lake Braddock · Ms. Chen · 4 IEP goals</div><div class="rprog-bar"><div class="rprog-fill" style="width:34%;background:var(--amber);"></div></div></div><span class="bdg bdg-amber">34%</span><button class="btn btn-ghost" style="font-size:11px;" onclick="nav(document.querySelector('[data-page=school-iep]'))">IEP →</button></div></div>
+  </div>
+
+  <!-- ════ SCHOOL IEP ════ -->
+  <div class="page-screen" id="pg-school-iep">
+    <div class="stats-grid"><div class="stat-card"><div class="stat-lbl">Total goals</div><div class="stat-val">914</div></div><div class="stat-card"><div class="stat-lbl">On track</div><div class="stat-val">71%</div></div><div class="stat-card"><div class="stat-lbl">Needs focus</div><div class="stat-val">29%</div></div></div>
+    <div class="card"><div class="sec-hd"><div class="sec-title">Top unmet IEP goals — district-wide</div></div><div class="goal-card"><div class="goal-text">Employment readiness — resume writing and interview preparation</div><div class="goal-meta"><span class="bdg bdg-blue">Employment</span><span style="font-size:11px;color:var(--text-3);">63 students below target</span><button class="btn btn-ghost" style="font-size:10px;padding:2px 7px;" onclick="nav(document.querySelector('[data-page=edu-iep]'))">View in educator →</button></div></div><div class="goal-card"><div class="goal-text">Communication strategies for workplace conflict resolution</div><div class="goal-meta"><span class="bdg bdg-blue">Employment</span><span style="font-size:11px;color:var(--text-3);">41 students below target</span></div></div><div class="goal-card"><div class="goal-text">Budget management with minimal adult support</div><div class="goal-meta"><span class="bdg bdg-green">Ind. living</span><span style="font-size:11px;color:var(--text-3);">38 students below target</span></div></div></div>
+  </div>
+
+  <!-- ════ SCHOOL REPORTS ════ -->
+  <div class="page-screen" id="pg-school-reports">
+    <div class="stats-grid"><div class="stat-card"><div class="stat-lbl">Pending</div><div class="stat-val">6</div></div><div class="stat-card"><div class="stat-lbl">Generated this year</div><div class="stat-val">89</div></div></div>
+    <div class="card"><div class="sec-hd"><div class="sec-title">District reports</div><button class="btn btn-blue"><i class="ti ti-file-export" style="font-size:12px;"></i> Bulk export Indicator 13</button></div><div class="list-row"><div style="flex:1;"><div class="rname">District aggregate — May 2025</div><div class="rsub">Completion rates, top goals, engagement</div></div><button class="btn btn-blue"><i class="ti ti-download" style="font-size:12px;"></i> Download</button></div><div class="list-row"><div style="flex:1;"><div class="rname">Westfield HS — Indicator 13 batch</div><div class="rsub">47 students · 2024–2025</div></div><span class="bdg bdg-green">Ready</span><button class="btn btn-blue"><i class="ti ti-download" style="font-size:12px;"></i> Download</button></div><div class="list-row" style="border-bottom:none;"><div style="flex:1;"><div class="rname">Lake Braddock — progress reports</div><div class="rsub">23 students · requested May 21</div></div><span class="bdg bdg-amber">Generating</span></div></div>
+  </div>
+
+  <!-- ════ SCHOOL SETTINGS ════ -->
+  <div class="page-screen" id="pg-school-settings">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">District configuration</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">District name</div><div class="tog-sub">Fairfax County Public Schools</div></div><button class="btn btn-ghost" style="font-size:11px;">Edit</button></div><div class="tog-row"><div><div class="tog-lbl">SSO provider</div><div class="tog-sub">Google Workspace · SAML 2.0</div></div><span class="bdg bdg-blue">Connected</span></div><div class="tog-row"><div><div class="tog-lbl">Contract status</div><div class="tog-sub">Active · 247 seats</div></div><span class="bdg bdg-green">Active</span></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">FERPA DPA</div><div class="tog-sub">Signed Feb 1, 2025</div></div><span class="bdg bdg-green">On file</span></div></div></div>
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">Seat management</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">Seats used</div><div class="tog-sub">247 of 300 allocated</div></div><button class="btn btn-ghost" style="font-size:11px;">Request more</button></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Low-engagement alerts</div><div class="tog-sub">Alert coordinator when a student goes 7 days without activity</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div></div></div>
+    </div>
+  </div>
+
+  <!-- ════ EMPLOYER PIPELINE ════ -->
+  <div class="page-screen" id="pg-emp-pipeline">
+    <div class="stats-grid"><div class="stat-card"><div class="stat-lbl">Active candidates</div><div class="stat-val">34</div><div class="stat-sub">Opted in this quarter</div></div><div class="stat-card"><div class="stat-lbl">Interview-ready</div><div class="stat-val">18</div></div><div class="stat-card"><div class="stat-lbl">Avg readiness</div><div class="stat-val">71%</div></div><div class="stat-card"><div class="stat-lbl">Custom scenarios</div><div class="stat-val">12</div></div></div>
+    <div class="card"><div class="sec-hd"><div class="sec-title">Interview-ready candidates</div><div style="display:flex;gap:8px;"><select style="font-size:11px;"><option>All candidates</option><option>75%+ ready</option><option>In progress</option></select><button class="btn btn-purple" onclick="nav(document.querySelector('[data-page=emp-ats]'))"><i class="ti ti-plug" style="font-size:12px;"></i> Export to ATS</button></div></div><div class="list-row"><div class="av" style="background:var(--purple-lt);color:var(--purple-dk);">#1142</div><div style="flex:1;"><div class="rname">Candidate #1142</div><div class="rsub">5 mock interviews · 3 custom scenarios completed</div><div class="rprog-bar"><div class="rprog-fill" style="width:88%;background:var(--purple);"></div></div></div><span class="bdg bdg-purple">88% ready</span></div><div class="list-row"><div class="av" style="background:var(--purple-lt);color:var(--purple-dk);">#0987</div><div style="flex:1;"><div class="rname">Candidate #0987</div><div class="rsub">3 mock interviews · 5 custom scenarios completed</div><div class="rprog-bar"><div class="rprog-fill" style="width:82%;background:var(--purple);"></div></div></div><span class="bdg bdg-purple">82% ready</span></div><div class="list-row"><div class="av" style="background:var(--purple-lt);color:var(--purple-dk);">#1308</div><div style="flex:1;"><div class="rname">Candidate #1308</div><div class="rsub">4 mock interviews · 2 custom scenarios completed</div><div class="rprog-bar"><div class="rprog-fill" style="width:76%;background:var(--purple);"></div></div></div><span class="bdg bdg-purple">76% ready</span></div><div class="list-row" style="opacity:.6;border-bottom:none;"><div class="av" style="background:var(--gray-bg);color:var(--gray-mid);">#0731</div><div style="flex:1;"><div class="rname">Candidate #0731</div><div class="rsub">In progress — 2 modules remaining</div><div class="rprog-bar"><div class="rprog-fill" style="width:52%;background:var(--gray-mid);"></div></div></div><span class="bdg bdg-gray">In progress</span></div></div>
+  </div>
+
+  <!-- ════ EMPLOYER SCENARIOS ════ -->
+  <div class="page-screen" id="pg-emp-scenarios">
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:240px;">
+        <div class="sec-hd" style="margin-bottom:10px;"><div class="sec-title">Microsoft custom scenarios</div><button class="btn btn-purple"><i class="ti ti-plus" style="font-size:12px;"></i> New scenario</button></div>
+        <div class="scen-card active" id="sc-s1" onclick="selectScen('s1',this)"><div style="display:flex;align-items:center;gap:8px;"><div style="width:32px;height:32px;border-radius:8px;background:var(--purple-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-device-laptop" style="font-size:15px;color:var(--purple-dk);"></i></div><div style="flex:1;"><div class="rname" style="font-size:12px;">Remote team communication</div><div class="rsub">28 candidates · 4.6 avg rating</div></div><span class="bdg bdg-purple">Active</span></div></div>
+        <div class="scen-card" id="sc-s2" onclick="selectScen('s2',this)"><div style="display:flex;align-items:center;gap:8px;"><div style="width:32px;height:32px;border-radius:8px;background:var(--purple-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-users" style="font-size:15px;color:var(--purple-dk);"></i></div><div style="flex:1;"><div class="rname" style="font-size:12px;">Requesting accommodation at onboarding</div><div class="rsub">19 candidates · 4.8 avg rating</div></div><span class="bdg bdg-purple">Active</span></div></div>
+        <div class="scen-card" id="sc-s3" onclick="selectScen('s3',this)"><div style="display:flex;align-items:center;gap:8px;"><div style="width:32px;height:32px;border-radius:8px;background:var(--purple-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-calendar-event" style="font-size:15px;color:var(--purple-dk);"></i></div><div style="flex:1;"><div class="rname" style="font-size:12px;">Navigating a last-minute meeting change</div><div class="rsub">12 candidates · 4.4 avg rating</div></div><span class="bdg bdg-amber">Draft</span></div></div>
+      </div>
+      <div id="scen-preview-panel" style="width:300px;flex-shrink:0;">
+        <div class="card" style="border:1px solid var(--purple-md);">
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;" id="sp-title">Remote team communication</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px;" id="sp-body">Your team uses a shared Slack channel for daily standups. Your manager asks you to post a message by 10am each day. You missed posting yesterday.</div>
+          <div style="font-size:11px;font-weight:500;color:var(--text-3);margin-bottom:6px;">What would you do?</div>
+          <div id="sp-opts"></div>
+          <div style="margin-top:10px;font-size:10px;color:var(--text-3);">Green = recommended response · Amber = less ideal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ EMPLOYER ANALYTICS ════ -->
+  <div class="page-screen" id="pg-emp-analytics">
+    <div class="stats-grid"><div class="stat-card"><div class="stat-lbl">Completion rate</div><div class="stat-val">71%</div></div><div class="stat-card"><div class="stat-lbl">Avg sessions</div><div class="stat-val">4.2</div></div><div class="stat-card"><div class="stat-lbl">Top module</div><div class="stat-val" style="font-size:14px;">Mock interview</div></div></div>
+    <div class="card"><div class="sec-title" style="margin-bottom:12px;">Readiness by module</div><div class="chart-bar-rows"><div class="prog-row"><div class="prog-lbl">Mock interview</div><div class="prog-track"><div class="prog-fill" style="width:88%;background:var(--purple);"></div></div><div class="prog-pct">88%</div></div><div class="prog-row"><div class="prog-lbl">Workplace scenarios</div><div class="prog-track"><div class="prog-fill" style="width:74%;background:var(--purple);"></div></div><div class="prog-pct">74%</div></div><div class="prog-row"><div class="prog-lbl">Strengths portfolio</div><div class="prog-track"><div class="prog-fill" style="width:61%;background:var(--purple);"></div></div><div class="prog-pct">61%</div></div><div class="prog-row"><div class="prog-lbl">Accommodation guide</div><div class="prog-track"><div class="prog-fill" style="width:52%;background:var(--purple);"></div></div><div class="prog-pct">52%</div></div><div class="prog-row"><div class="prog-lbl">Disclosure decision</div><div class="prog-track"><div class="prog-fill" style="width:38%;background:var(--purple);"></div></div><div class="prog-pct">38%</div></div></div></div>
+    <div class="card"><div class="sec-title" style="margin-bottom:10px;">Candidate pipeline trend</div><div style="display:flex;align-items:flex-end;gap:8px;height:80px;padding:0 4px;"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="background:var(--purple-lt);border:1px solid var(--purple-md);width:100%;border-radius:4px 4px 0 0;height:40%;"></div><div style="font-size:10px;color:var(--text-3);">Feb</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="background:var(--purple-lt);border:1px solid var(--purple-md);width:100%;border-radius:4px 4px 0 0;height:60%;"></div><div style="font-size:10px;color:var(--text-3);">Mar</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="background:var(--purple);width:100%;border-radius:4px 4px 0 0;height:75%;"></div><div style="font-size:10px;color:var(--text-3);">Apr</div></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="background:var(--purple);width:100%;border-radius:4px 4px 0 0;height:90%;"></div><div style="font-size:10px;color:var(--text-3);">May</div></div></div></div>
+    <div class="info-box info-blue"><i class="ti ti-arrow-right" style="font-size:13px;flex-shrink:0;"></i><span>Candidate readiness is derived from LaunchReady module completion data. <span style="font-weight:500;cursor:pointer;text-decoration:underline;" onclick="nav(document.querySelector('[data-page=emp-scenarios]'))">Customise scenarios to improve scores →</span></span></div>
+  </div>
+
+  <!-- ════ EMPLOYER ATS ════ -->
+  <div class="page-screen" id="pg-emp-ats">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">ATS integration — Greenhouse</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">Connection status</div></div><span class="bdg bdg-green">Connected</span></div><div class="tog-row"><div><div class="tog-lbl">Auto-push interview-ready candidates</div><div class="tog-sub">Threshold: 75% readiness score</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div><div class="tog-row"><div><div class="tog-lbl">Readiness threshold</div></div><select style="font-size:11px;padding:4px 8px;"><option>65%</option><option selected>75%</option><option>85%</option></select></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Candidate anonymisation</div><div class="tog-sub">Export IDs only — no names to ATS</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div></div></div>
+      <div class="card"><div class="sec-title" style="margin-bottom:10px;">Webhook events</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">student.milestone.reached</div></div><div class="sw on" onclick="toggleSw(this)"><div class="sw-k"></div></div></div><div class="tog-row"><div><div class="tog-lbl">student.module.completed</div></div><div class="sw off" onclick="toggleSw(this)"><div class="sw-k"></div></div></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Webhook URL</div><div class="tog-sub" style="font-family:var(--mono);font-size:10px;">https://api.greenhouse.io/...</div></div><button class="btn btn-ghost" style="font-size:11px;">Edit</button></div></div></div>
+      <div class="card" style="grid-column:1/-1;"><div class="sec-title" style="margin-bottom:10px;">White-label branding</div><div class="card-sm"><div class="tog-row"><div><div class="tog-lbl">Portal subdomain</div><div class="tog-sub" style="font-family:var(--mono);font-size:11px;">microsoft.launchready.app</div></div><span class="bdg bdg-purple">Active</span></div><div class="tog-row" style="border-bottom:none;"><div><div class="tog-lbl">Logo</div><div class="tog-sub">Microsoft logo uploaded</div></div><button class="btn btn-ghost" style="font-size:11px;"><i class="ti ti-upload" style="font-size:11px;"></i> Change</button></div></div></div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+var PORTALS={student:{color:'var(--teal)',label:'Student app',av:'JT',avbg:'var(--teal-lt)',avc:'var(--teal-dk)'},parent:{color:'var(--purple)',label:'Parent app',av:'ST',avbg:'var(--purple-lt)',avc:'var(--purple-dk)'},edu:{color:'var(--blue)',label:'Educator dashboard',av:'MC',avbg:'var(--blue-lt)',avc:'var(--blue-dk)'},school:{color:'var(--blue)',label:'School district',av:'LW',avbg:'var(--blue-lt)',avc:'var(--blue-dk)'},emp:{color:'var(--purple-dk)',label:'Employer portal',av:'RP',avbg:'var(--purple-lt)',avc:'var(--purple-dk)'}};
+var PAGE_META={'home':{portal:'student',label:'Home'},'tasks':{portal:'student',label:'Task coach'},'progress':{portal:'student',label:'Progress'},'interview':{portal:'student',label:'AI interview'},'profile':{portal:'student',label:'Profile'},'parent-home':{portal:'parent',label:'Home'},'parent-progress':{portal:'parent',label:'Progress'},'parent-alerts':{portal:'parent',label:'Alerts'},'parent-settings':{portal:'parent',label:'Settings'},'edu-students':{portal:'edu',label:'My students'},'edu-iep':{portal:'edu',label:'IEP goals'},'edu-reports':{portal:'edu',label:'Reports'},'edu-settings':{portal:'edu',label:'Settings'},'school-overview':{portal:'school',label:'District overview'},'school-caseloads':{portal:'school',label:'Student caseloads'},'school-iep':{portal:'school',label:'IEP goals'},'school-reports':{portal:'school',label:'Reports'},'school-settings':{portal:'school',label:'Settings'},'emp-pipeline':{portal:'emp',label:'Candidate pipeline'},'emp-scenarios':{portal:'emp',label:'Scenario library'},'emp-analytics':{portal:'emp',label:'Analytics'},'emp-ats':{portal:'emp',label:'ATS settings'}};
+var currentPage='home';
+
+function nav(el){
+  if(!el)return;
+  var page=el.getAttribute('data-page');
+  if(!page)return;
+  showPage(page);
+}
+
+function showPage(page){
+  currentPage=page;
+  document.querySelectorAll('.page-screen').forEach(p=>p.classList.remove('active'));
+  var target=document.getElementById('pg-'+page);
+  if(target)target.classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  var sItem=document.querySelector('.sidebar-item[data-page="'+page+'"]');
+  if(sItem)sItem.classList.add('active');
+  var meta=PAGE_META[page];
+  if(meta){
+    var portal=PORTALS[meta.portal];
+    var tag=document.getElementById('portal-tag');
+    var bc=document.getElementById('breadcrumb');
+    var av=document.getElementById('topbar-av');
+    tag.textContent=portal.label;
+    tag.style.background=portal.avbg;
+    tag.style.color=portal.avc;
+    bc.innerHTML='<span>'+meta.label+'</span>';
+    av.textContent=portal.av;
+    av.style.background=portal.avbg;
+    av.style.color=portal.avc;
+  }
+  if(page==='tasks')initTasks();
+  if(page==='emp-scenarios')initScenarios();
+  window.scrollTo(0,0);
+}
+
+function toggleSw(el){
+  var on=el.classList.contains('on');
+  el.classList.toggle('on',!on);
+  el.classList.toggle('off',on);
+}
+function pickMood(el){document.querySelectorAll('#mood-btns>div').forEach(b=>{b.style.background='var(--gray-bg)';b.style.borderColor='transparent';});el.style.background='var(--teal-lt)';el.style.borderColor='var(--teal-md)';}
+function checkHomeTask(el){el.style.background='var(--teal)';el.style.borderColor='var(--teal)';el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';el.innerHTML='<i class="ti ti-check" style="font-size:10px;color:#fff;"></i>';el.onclick=null;var txt=el.nextElementSibling;if(txt){txt.style.textDecoration='line-through';txt.style.color='var(--text-3)';}}
+
+var taskData=[{txt:'Look up the company online',done:true,dur:'10m'},{txt:'Write down 2 questions to ask',done:true,dur:'5m'},{txt:'Practice your introduction',done:false,dur:'10m',current:true},{txt:'Choose your outfit',done:false,dur:'5m'},{txt:'Leave home 20 min early',done:false,dur:'5m'}];
+function initTasks(){
+  var stepsEl=document.getElementById('task-steps');
+  var detailEl=document.getElementById('task-detail-list');
+  if(!stepsEl||!detailEl)return;
+  stepsEl.innerHTML='';detailEl.innerHTML='';
+  taskData.forEach(function(t,i){
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;'+(t.current?'background:var(--teal-lt);':t.done?'opacity:.7':'');
+    var chk=document.createElement('div');
+    chk.style.cssText='width:18px;height:18px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;';
+    chk.style.background=t.done?'var(--teal)':'transparent';
+    chk.style.borderColor=t.done||t.current?'var(--teal)':'var(--gray-border)';
+    if(t.done)chk.innerHTML='<i class="ti ti-check" style="font-size:10px;color:#fff;"></i>';
+    if(!t.done)chk.onclick=(function(idx){return function(){completeTask(idx);};})(i);
+    var txt=document.createElement('div');
+    txt.style.cssText='flex:1;font-size:11px;color:'+(t.done?'var(--text-3)':'var(--text)')+';'+(t.done?'text-decoration:line-through;':'');
+    txt.textContent=t.txt;
+    var dur=document.createElement('div');
+    dur.style.cssText='font-size:10px;color:var(--text-3);';
+    dur.textContent=t.dur;
+    d.appendChild(chk);d.appendChild(txt);d.appendChild(dur);
+    stepsEl.appendChild(d);
+    var dd=document.createElement('div');
+    dd.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-border);'+(i===taskData.length-1?'border-bottom:none;':'');
+    dd.innerHTML='<div style="width:20px;height:20px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:'+(t.done?'var(--teal)':'transparent')+';border-color:'+(t.done?'var(--teal)':'var(--gray-border)')+';">'+(t.done?'<i class="ti ti-check" style="font-size:10px;color:#fff;"></i>':'')+'</div><div style="flex:1;font-size:12px;color:'+(t.done?'var(--text-3)':'var(--text)')+';">'+(t.done?'<s>':'')+'Step '+(i+1)+': '+t.txt+(t.done?'</s>':'')+'</div><span style="font-size:11px;color:var(--text-3);">'+t.dur+'</span>';
+    detailEl.appendChild(dd);
+  });
+}
+function completeTask(idx){taskData[idx].done=true;if(idx+1<taskData.length)taskData[idx+1].current=true;if(taskData[idx-1])taskData[idx-1].current=false;initTasks();}
+function triggerReframe(){var box=document.getElementById('reframe-box');box.classList.remove('hidden');box.innerHTML='<strong>That does sound like a lot.</strong><br>Try this instead: Just say three sentences about yourself. Where you live, what job you want, and one thing you are good at.<br><span style="display:block;margin-top:6px;font-weight:500;">Sub-steps: Say your name. Say the job. Say one strength.</span>';}
+function flagStep(){var box=document.getElementById('reframe-box');box.classList.remove('hidden');box.innerHTML='<i class="ti ti-flag" style="font-size:13px;"></i> Step flagged as difficult. Your teacher Ms. Chen will be notified. AI reframe is being generated...';}
+
+function selectStudent(s){document.querySelectorAll('.student-row').forEach(r=>r.style.background='');event.currentTarget.style.background='var(--blue-lt)';var d=document.getElementById('student-detail-box');d.classList.remove('hidden');var names={jordan:'Jordan Taylor · 72% overall · 7 IEP goals',alex:'Alex Martinez · 48% overall · 5 IEP goals',sam:'Sam Rivera · 85% overall · 6 IEP goals',kim:'Kim Park · 34% overall · 4 IEP goals'};document.getElementById('sd-name').textContent=s.charAt(0).toUpperCase()+s.slice(1)+' — student detail';document.getElementById('sd-sub').textContent=names[s]||'';}
+
+var GOALS={};
+function selectGoal(id,txt,cat,student,modules,ev){document.querySelectorAll('.goal-card').forEach(g=>g.classList.remove('selected'));document.getElementById(id).classList.add('selected');var panel=document.getElementById('goal-detail-panel');panel.classList.remove('hidden');document.getElementById('gdp-title').textContent=student;document.getElementById('gdp-student').textContent=student;document.getElementById('gdp-cat').textContent=cat;document.getElementById('gdp-ev').textContent=ev;var modEl=document.getElementById('gdp-modules');modEl.innerHTML='';modules.forEach(function(m){var s=document.createElement('div');s.className='bdg bdg-teal';s.style.cssText='display:inline-flex;margin-bottom:4px;font-size:11px;';s.textContent=m;modEl.appendChild(s);modEl.appendChild(document.createElement('br'));});}
+function closeGoalPanel(){document.getElementById('goal-detail-panel').classList.add('hidden');document.querySelectorAll('.goal-card').forEach(g=>g.classList.remove('selected'));}
+
+function startReportGen(btn){btn.style.display='none';var panel=document.getElementById('report-gen-panel');panel.style.display='block';var bar=document.getElementById('rgen-bar');var status=document.getElementById('rgen-status');var steps=[{p:20,t:'Fetching IEP goals for Sam Rivera...'},{p:40,t:'Mapping progress records to goals...'},{p:65,t:'Rendering PDF from OSEP template...'},{p:85,t:'Uploading to secure storage...'},{p:100,t:'Done — PDF ready to download.'}];var i=0;function tick(){if(i>=steps.length)return;bar.style.width=steps[i].p+'%';status.textContent=steps[i].t;i++;setTimeout(tick,900);}tick();}
+
+var SCEN_DATA={s1:{title:'Remote team communication — async standup',body:'Your team uses a shared Slack channel for daily standups. Your manager asks you to post a message by 10am. You missed posting yesterday.',opts:['Post an update now explaining what happened and your plan for today.','Wait and see if your manager notices.','Send your manager a private message asking if you need to post retroactively.','Skip it — one day is not a big deal.'],correct:[0,2]},s2:{title:'Requesting accommodation at onboarding',body:'It is your first week. The open-plan office is very noisy and hard to concentrate in. You have a written accommodation agreement but HR has not set anything up yet.',opts:['Email HR with your agreement attached and request a follow-up meeting.','Manage it yourself without saying anything.','Speak directly to your manager and explain the situation.','Wait and hope it gets quieter.'],correct:[0,2]},s3:{title:'Navigating a last-minute meeting change',body:'You have been preparing for an important presentation for two weeks. One hour before the meeting your manager says the time changed to 30 minutes from now.',opts:['Reply immediately to confirm you received the message and will attend.','Ask for the meeting to be rescheduled.','Attend at the original time.','Ask a colleague what they plan to do.'],correct:[0]}};
+var currentScen='s1';
+function initScenarios(){loadScen(currentScen);}
+function selectScen(id,el){document.querySelectorAll('.scen-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');currentScen=id;loadScen(id);}
+function loadScen(id){var s=SCEN_DATA[id];if(!s)return;document.getElementById('sp-title').textContent=s.title;document.getElementById('sp-body').textContent=s.body;var opts=document.getElementById('sp-opts');opts.innerHTML='';var letters=['A','B','C','D'];s.opts.forEach(function(opt,i){var btn=document.createElement('button');btn.className='opt-btn';btn.textContent=letters[i]+'. '+opt;btn.onclick=function(){document.querySelectorAll('#sp-opts .opt-btn').forEach(b=>{b.classList.remove('correct','wrong');});var good=s.correct.indexOf(i)!==-1;btn.classList.add(good?'correct':'wrong');};opts.appendChild(btn);});}
+
+showPage('home');
+initScenarios();
+</script>
+</body>
+</html>
